@@ -22,30 +22,28 @@ const DownloadPreview = ({ resume }: { resume: Resume }) => {
 
 	const downloadAsPDF = async () => {
 		if (typeof window === "undefined" || !componentRef.current) return;
-
+	
 		try {
-			// 🛡️ Safety check
-			if (!resume || !resume.name || !resume.themeColor) {
-				console.error("Missing resume fields.");
-				return;
-			}
-
 			const dataUrl = await toPng(componentRef.current, {
 				cacheBust: true,
 				quality: 1,
 			});
-
+	
 			const pdf = new jsPDF("p", "mm", "a4");
 			const pdfWidth = pdf.internal.pageSize.getWidth();
 			const pxHeight = componentRef.current.offsetHeight;
 			const pdfHeight = pxHeight * 0.264; // px to mm
-
+	
+			const safeName =
+				typeof resume.name === "string" ? resume.name.trim() : "resume";
+	
 			pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-			pdf.save(`${resume.name?.trim() || "resume"}.pdf`);
+			pdf.save(`${safeName}.pdf`);
 		} catch (error) {
 			console.error("Error generating PDF:", error);
 		}
 	};
+	
 
 	return (
 		<div className="flex flex-col justify-center items-center gap-4">

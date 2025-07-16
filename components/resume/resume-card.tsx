@@ -47,7 +47,7 @@ const ResumeCard = ({ resume }: { resume: Resume }) => {
 					href={`/dashboard/resume/download/${resume.id}`}
 					className="btn btn-success text-white min-w-20"
 				>
-					Download
+					Print
 				</Link>
 				<button
 					onClick={() => handleDeleteResume(resume.id)}

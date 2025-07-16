@@ -48,12 +48,12 @@ const DownloadPreview = ({ resume }: { resume: Resume }) => {
 	return (
 		<div className="flex flex-col justify-center items-center gap-4">
 			<div className="flex gap-10 mt-5">
-				<button
+				{/* <button
 					onClick={downloadAsPDF}
 					className="btn btn-success text-white min-w-20"
 				>
 					Download
-				</button>
+				</button> */}
 
 				<button
 					onClick={printIt}

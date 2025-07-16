@@ -17,13 +17,19 @@ const DownloadPreview = ({ resume }: { resume: Resume }) => {
 	const componentRef = useRef<HTMLDivElement>(null);
 
 	const printIt = useReactToPrint({
-		contentRef: componentRef, // ✅ fixed
+		contentRef: componentRef,
 	});
 
 	const downloadAsPDF = async () => {
 		if (typeof window === "undefined" || !componentRef.current) return;
 
 		try {
+			// 🛡️ Safety check
+			if (!resume || !resume.name || !resume.themeColor) {
+				console.error("Missing resume fields.");
+				return;
+			}
+
 			const dataUrl = await toPng(componentRef.current, {
 				cacheBust: true,
 				quality: 1,
@@ -35,7 +41,7 @@ const DownloadPreview = ({ resume }: { resume: Resume }) => {
 			const pdfHeight = pxHeight * 0.264; // px to mm
 
 			pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-			pdf.save("resume.pdf");
+			pdf.save(`${resume.name?.trim() || "resume"}.pdf`);
 		} catch (error) {
 			console.error("Error generating PDF:", error);
 		}
@@ -60,16 +66,20 @@ const DownloadPreview = ({ resume }: { resume: Resume }) => {
 			</div>
 
 			<div
-  ref={componentRef}
-  className="shadow-lg space-y-4 w-full sm:w-3/4 print:w-full min-h-52 print:min-h-full p-4 border-b-[10px]"
-  style={{ borderColor: resume.themeColor }}
->
-
-				<PersonalInfo resume={resume} />
-				<SummaryInfo resume={resume} />
-				<ExperienceInfo resume={resume} />
-				<EducationInfo resume={resume} />
-				<SkillsInfo resume={resume} />
+				ref={componentRef}
+				className="shadow-lg space-y-4 w-full sm:w-3/4 print:w-full min-h-52 print:min-h-full p-4 border-b-[10px]"
+				style={{ borderColor: resume.themeColor || "#000" }}
+			>
+				{/* 🛡️ Optional chaining prevents crash */}
+				{resume && (
+					<>
+						<PersonalInfo resume={resume} />
+						<SummaryInfo resume={resume} />
+						<ExperienceInfo resume={resume} />
+						<EducationInfo resume={resume} />
+						<SkillsInfo resume={resume} />
+					</>
+				)}
 			</div>
 		</div>
 	);
